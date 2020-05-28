@@ -38,5 +38,6 @@ class CNNModel:
         self.model.add(Dropout(0.25))
         self.model.add(Dense(2, activation='softmax'))
 
-        self.model.compile(loss='binary_crossentropy',
-                           optimizer='rmsprop', metrics=['accuracy'])
+        self.model.compile(optimizer='rmsprop',
+                           loss='binary_crossentropy',
+                           metrics=['accuracy'])
