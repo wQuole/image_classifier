@@ -31,7 +31,7 @@ class CNNModel:
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
-        # Block 5
+        # Block 5 - Prediction layer
         self.model.add(Flatten())
         self.model.add(Dense(512, activation='relu'))
         self.model.add(BatchNormalization())

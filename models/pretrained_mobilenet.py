@@ -1,27 +1,28 @@
-from tensorflow.keras.applications import VGG16
+from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.optimizers import RMSprop
 from tensorflow.keras.losses import BinaryCrossentropy
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, BatchNormalization
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, GlobalAveragePooling2D
 
 
-class PretrainedVGG16:
+class PretrainedMobileNetV2:
     def __init__(self, IMAGE_SIZE):
         self.image_size = IMAGE_SIZE
         self.model = Sequential()
         self.fine_tune()
 
     def fine_tune(self):
-        # Initialize basemodel
-        vgg16_model = VGG16(input_shape=(self.image_size),
-                            include_top=False,
-                            weights="imagenet")
+        mobilenetv2_model = MobileNetV2(input_shape=(self.image_size),
+                                        include_top=False,
+                                        pooling='avg',
+                                        weights="imagenet")
 
-        for layer in vgg16_model.layers[:-4]:
+        for layer in mobilenetv2_model.layers:
             # Freeze layers that should not be re-trained
             layer.trainable = False
-            # Add all layers from basemodel, trainable and non-trainable to our model
-            self.model.add(layer)
+
+        # Add all layers from basemodel, trainable and non-trainable to our model
+        self.model.add(mobilenetv2_model)
 
         # Add classification block
         self.model.add(Flatten())
@@ -29,7 +30,6 @@ class PretrainedVGG16:
         self.model.add(Dropout(0.5))
         self.model.add(Dense(2, activation='softmax'))
 
-        # Prepare model for training
-        self.model.compile(optimizer=RMSprop(lr=1e-3),
+        self.model.compile(optimizer=RMSprop(lr=1e-4),
                            loss=BinaryCrossentropy(from_logits=True),
                            metrics=['accuracy'])
