@@ -25,9 +25,6 @@ class PretrainedMobileNetV2:
         self.model.add(mobilenetv2_model)
 
         # Add classification block
-        self.model.add(Flatten())
-        self.model.add(Dense(1024, activation='relu'))
-        self.model.add(Dropout(0.5))
         self.model.add(Dense(2, activation='softmax'))
 
         self.model.compile(optimizer=RMSprop(lr=1e-4),
